@@ -1,4 +1,4 @@
 -debug
 -cp src
 -main Main
--neko bin/neko/Main.n
+-neko bin/Main.n

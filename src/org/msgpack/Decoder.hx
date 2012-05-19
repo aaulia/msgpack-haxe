@@ -30,7 +30,7 @@ class Decoder {
 				case 0xcb: return i.readDouble();
 				
 				// unsigned int
-				case 0xcc: return i.readByte ();
+				case 0xcc: return i.readByte  ();
 				case 0xcd: return i.readUInt16();
 				case 0xce: return i.readUInt30();
 				case 0xcf: throw "UInt64 not supported";
