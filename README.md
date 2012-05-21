@@ -1,4 +1,4 @@
 msgpack-haxe
 ============
 
-MessagePack for HaXe
+MessagePack (http://msgpack.org) serialization library for HaXe
