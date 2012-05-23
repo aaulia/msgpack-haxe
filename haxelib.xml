@@ -1,4 +1,4 @@
-<project name="msgpack-haxe" url="http://github.com/aaulia/msgpack-haxe" license="GPL">
+<project name="msgpack-haxe" url="http://github.com/aaulia/msgpack-haxe" license="MIT">
 	<user name="aaulia"/>
 	<tag v="cross"/>
 	<tag v="serialization"/>
