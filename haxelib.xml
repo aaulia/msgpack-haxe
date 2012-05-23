@@ -1,0 +1,8 @@
+<project name="msgpack-haxe" url="http://github.com/aaulia/msgpack-haxe" license="GPL">
+	<user name="aaulia"/>
+	<tag v="cross"/>
+	<tag v="serialization"/>
+	<tag v="msgpack"/>
+	<description>MessagePack (http://msgpack.org) serialization for HaXe</description>
+	<version name="1.0">Initial release, everything is working correctly</version>
+</project>

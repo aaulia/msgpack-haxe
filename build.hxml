@@ -1,4 +1,0 @@
--debug
--cp src
--main Main
--neko bin/Main.n
