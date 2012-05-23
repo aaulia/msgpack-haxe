@@ -6,11 +6,11 @@ using Reflect;
 
 class Encoder {
 
-	static public inline var FLOAT_SINGLE_MIN:Float = 1.40129846432481707e-45;
-	static public inline var FLOAT_SINGLE_MAX:Float = 3.40282346638528860e+38;
+	static private inline var FLOAT_SINGLE_MIN:Float = 1.40129846432481707e-45;
+	static private inline var FLOAT_SINGLE_MAX:Float = 3.40282346638528860e+38;
 
-	static public inline var FLOAT_DOUBLE_MIN:Float = 4.94065645841246544e-324;
-	static public inline var FLOAT_DOUBLE_MAX:Float = 1.79769313486231570e+308;
+	static private inline var FLOAT_DOUBLE_MIN:Float = 4.94065645841246544e-324;
+	static private inline var FLOAT_DOUBLE_MAX:Float = 1.79769313486231570e+308;
 
 	var o:BytesOutput;
 
