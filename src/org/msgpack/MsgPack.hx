@@ -7,7 +7,7 @@ class MsgPack {
 		return new Encoder(d).getBytes(); 
 	}
 
-	public static inline function decode(b:Bytes, obj = false):Dynamic { 
+	public static inline function decode(b:Bytes, obj = true):Dynamic { 
 		return new Decoder(b, obj).getResult(); 
 	}
 
