@@ -3,6 +3,6 @@
 	<tag v="cross"/>
 	<tag v="serialization"/>
 	<tag v="msgpack"/>
-	<description>MessagePack (http://msgpack.org) serialization for HaXe</description>
-	<version name="1.0">Initial release, everything is working correctly</version>
+	<description>MessagePack (http://msgpack.org) for HaXe</description>
+	<version name="1.1">Added RPC Client (flash) and Server (PHP)</version>
 </project>
