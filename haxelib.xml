@@ -4,5 +4,5 @@
 	<tag v="serialization"/>
 	<tag v="msgpack"/>
 	<description>MessagePack (http://msgpack.org) for HaXe</description>
-	<version name="1.1">Added RPC Client (flash) and Server (PHP)</version>
+    <version name="1.11">Add error checking on the server side rpc</version>
 </project>
