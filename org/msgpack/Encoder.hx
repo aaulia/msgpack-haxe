@@ -48,7 +48,7 @@ class Encoder {
 			if (d < -(1 << 15)) {
 				// signed int 32
 				o.writeByte(0xd2);
-				o.writeInt31(d);
+				o.writeInt32(d);
 			} else
 			if (d < -(1 << 7)) {
 				// signed int 16
@@ -78,7 +78,7 @@ class Encoder {
 				// unsigned int 32 
 				// TODO: HaXe writeUInt32 ?
 				o.writeByte(0xce);
-				o.writeUInt30(d);
+				o.writeInt32(d);
 			}
 		}
 	}
@@ -109,7 +109,7 @@ class Encoder {
 		} else {
 			// raw 32
 			o.writeByte(0xdb);
-			o.writeUInt30(length);
+			o.writeInt32(length);
 		}
 		o.write(b);
 	}
@@ -127,7 +127,7 @@ class Encoder {
 		} else {
 			// array 32
 			o.writeByte(0xdd);
-			o.writeUInt30(length);
+			o.writeInt32(length);
 		}
 
 		for (e in d) {
@@ -147,11 +147,11 @@ class Encoder {
 		} else {
 			// map 32
 			o.writeByte(0xdf);
-			o.writeUInt30(length);
+			o.writeInt32(length);
 		}		
 	}
 
-	inline function writeHashMap(d:Hash<Dynamic>) {
+	inline function writeHashMap(d:Map<String, Dynamic>) {
 		writeMapLength(Lambda.count(d));
 		for (k in d.keys()) { 
 			writeRaw(Bytes.ofString(k));

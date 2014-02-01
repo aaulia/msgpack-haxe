@@ -32,13 +32,13 @@ class Decoder {
 				// unsigned int
 				case 0xcc: return i.readByte  ();
 				case 0xcd: return i.readUInt16();
-				case 0xce: return i.readUInt30();
+				case 0xce: return i.readInt32 ();
 				case 0xcf: throw "UInt64 not supported";
 
 				// signed int
 				case 0xd0: return i.readInt8 ();
 				case 0xd1: return i.readInt16();
-				case 0xd2: return i.readInt31();
+				case 0xd2: return i.readInt32();
 				case 0xd3: throw "Int64 not supported";
 
 				// raw 16, 32
@@ -46,7 +46,7 @@ class Decoder {
 					return i.read(
 						(b == 0xda)
 							? i.readUInt16()
-							: i.readUInt30()
+							: i.readInt32 ()
 					).toString();
 
 				// array 16, 32
@@ -55,7 +55,7 @@ class Decoder {
 						i, 
 						(b == 0xdc) 
 							? i.readUInt16() 
-							: i.readUInt30(),
+							: i.readInt32 (),
 						obj
 					);
 
@@ -65,7 +65,7 @@ class Decoder {
 						i,
 						(b == 0xde)
 							? i.readUInt16()
-							: i.readUInt30(),
+							: i.readInt32 (),
 						obj
 					);
 
@@ -91,7 +91,7 @@ class Decoder {
 
 	function readMap(i, length, obj) {
 		return if (!obj) {			
-			var h = new Hash<Dynamic>();
+			var h = new Map<String, Dynamic>();
 			for (x in 0...length) {
 				var k = decode(i, obj);
 				var v = decode(i, obj);

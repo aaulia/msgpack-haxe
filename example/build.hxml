@@ -1,13 +1,12 @@
 # flash client
 -cp src
 -main Client
--swf9 bin/Client.swf
+-swf bin/Client.swf
 -debug
 -swf-version 11
 -swf-header 500:400:31:ffffff
 --flash-strict
 -lib msgpack-haxe
---dead-code-elimination
 
 --next
 
@@ -17,4 +16,3 @@
 -php bin/www
 -debug
 -lib msgpack-haxe
---dead-code-elimination

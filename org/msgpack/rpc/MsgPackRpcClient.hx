@@ -21,7 +21,7 @@ import haxe.Timer;
 import org.msgpack.MsgPack;
 
 
-class MsgPackRpcClient implements AsyncConnection, implements Dynamic<AsyncConnection> {
+class MsgPackRpcClient implements AsyncConnection implements Dynamic<AsyncConnection> {
 
 	var data:{ url:String, error:Dynamic->Void };
 	var path:Array<String>;
@@ -53,8 +53,8 @@ class MsgPackRpcClient implements AsyncConnection, implements Dynamic<AsyncConne
 		// 1. stamp, int32
 		// 2. path, string
 		// 3. params, array
-		var data        = [ 0, Std.int(Timer.stamp()), this.path.join("."), params ];
-		req.data        = MsgPack.encode(data).getData();
+		var data:Array<Dynamic> = [ 0, Std.int(Timer.stamp()), this.path.join("."), params ];
+		req.data = MsgPack.encode(data).getData();
 		
 		fnCb[data[1]]   = onResult;
 

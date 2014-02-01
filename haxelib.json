@@ -1,0 +1,11 @@
+{
+  "name": "msgpack-haxe",
+  "url": "http://github.com/aaulia/msgpack-haxe",
+  "license": "MIT",
+  "tags": ["cross","serialization","msgpack"],
+  "description": "MessagePack (http://msgpack.org) for HaXe",
+  "version": "1.11",
+  "releasenote": "Add error checking on the server side rpc",
+  "contributors": ["aaulia"],
+  "dependencies": { }
+}
