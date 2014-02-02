@@ -1,8 +1,11 @@
 package org.msgpack;
 
+import haxe.ds.StringMap;
 import haxe.io.Bytes;
 import haxe.io.BytesOutput;
+
 using Reflect;
+
 
 class Encoder {
 
@@ -29,9 +32,9 @@ class Encoder {
 			case TFloat   : writeFloat(d);
 			case TClass(c): {
 				switch (Type.getClassName(c)) {
-					case "String" : writeRaw(Bytes.ofString(d));
-					case "Array"  : writeArray(d);
-					case "Hash"   : writeHashMap(d);
+					case "String"           : writeRaw(Bytes.ofString(d));
+					case "Array"            : writeArray(d);
+					case "haxe.ds.StringMap": writeHashMap(d);
 				}
 			}
 
@@ -151,7 +154,7 @@ class Encoder {
 		}		
 	}
 
-	inline function writeHashMap(d:Map<String, Dynamic>) {
+	inline function writeHashMap(d:StringMap<Dynamic>) {
 		writeMapLength(Lambda.count(d));
 		for (k in d.keys()) { 
 			writeRaw(Bytes.ofString(k));

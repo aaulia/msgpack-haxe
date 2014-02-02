@@ -1,9 +1,12 @@
 package org.msgpack;
 
+import haxe.ds.StringMap;
 import haxe.io.Bytes;
 import haxe.io.BytesInput;
 import haxe.io.Eof;
+
 using Reflect;
+
 
 class Decoder {
 	var o:Dynamic;
@@ -91,7 +94,7 @@ class Decoder {
 
 	function readMap(i, length, obj) {
 		return if (!obj) {			
-			var h = new Map<String, Dynamic>();
+			var h = new StringMap<Dynamic>();
 			for (x in 0...length) {
 				var k = decode(i, obj);
 				var v = decode(i, obj);
