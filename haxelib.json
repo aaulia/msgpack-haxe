@@ -6,6 +6,6 @@
   "description": "MessagePack (http://msgpack.org) for HaXe",
   "version": "1.12.0",
   "releasenote": "Add error checking on the server side rpc",
-  "contributors": ["aaulia"],
+  "contributors": ["aaulia","Type1J"],
   "dependencies": { }
 }

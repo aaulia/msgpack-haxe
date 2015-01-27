@@ -28,6 +28,11 @@ class Decoder {
 				case 0xc2: return false;
 				case 0xc3: return true;
 
+				// binary
+				case 0xc4: return i.read(i.readByte());
+				case 0xc5: return i.read(i.readUInt16());
+				case 0xc6: return i.read(i.readInt32());
+
 				// floating point
 				case 0xca: return i.readFloat ();
 				case 0xcb: return i.readDouble();
@@ -44,39 +49,24 @@ class Decoder {
 				case 0xd2: return i.readInt32();
 				case 0xd3: throw "Int64 not supported";
 
-				// raw 16, 32
-				case 0xda, 0xdb: 
-					return i.read(
-						(b == 0xda)
-							? i.readUInt16()
-							: i.readInt32 ()
-					).toString();
+				// string
+				case 0xd9: return i.readString(i.readByte());
+				case 0xda: return i.readString(i.readUInt16());
+				case 0xdb: return i.readString(i.readInt32());
 
 				// array 16, 32
-				case 0xdc, 0xdd:
-					return readArray(
-						i, 
-						(b == 0xdc) 
-							? i.readUInt16() 
-							: i.readInt32 (),
-						obj
-					);
+				case 0xdc: return readArray(i, i.readUInt16(), obj);
+				case 0xdd: return readArray(i, i.readInt32(), obj);
 
 				// map 16, 32
-				case 0xde, 0xdf: 
-					return readMap(
-						i,
-						(b == 0xde)
-							? i.readUInt16()
-							: i.readInt32 (),
-						obj
-					);
+				case 0xde: return readMap(i, i.readUInt16(), obj);
+				case 0xdf: return readMap(i, i.readInt32(), obj);
 
 				default  : {
 					if (b < 0x80) {	return b;                            } else // positive fix num
 					if (b < 0x90) { return readMap(i, (0xf & b), obj);   } else // fix map
 					if (b < 0xa0) { return readArray(i, (0xf & b), obj); } else // fix array
-					if (b < 0xc0) { return i.read(0x1f & b).toString();  } else // fix raw
+					if (b < 0xc0) { return i.readString(0x1f & b);       } else // fix string
 					if (b > 0xdf) { return 0xffffff00 | b;               }      // negative fix num
 				}
 			}
