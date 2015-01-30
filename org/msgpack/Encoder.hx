@@ -32,7 +32,8 @@ class Encoder {
 			case TFloat   : writeFloat(d);
 			case TClass(c): {
 				switch (Type.getClassName(c)) {
-					case "String"           : writeRaw(Bytes.ofString(d));
+					case "Bytes"            : writeBinary(d);
+					case "String"           : writeString(d);
 					case "Array"            : writeArray(d);
 					case "haxe.ds.StringMap": writeHashMap(d);
 				}
@@ -72,7 +73,7 @@ class Encoder {
 				// unsigned int 8
 				o.writeByte(0xcc);
 				o.writeByte(d);
-			} else 
+			} else
 			if (d < (1 << 16)) {
 				// unsigned int 16
 				o.writeByte(0xcd);
@@ -99,22 +100,46 @@ class Encoder {
 			}
 	}
 
-	inline function writeRaw(b:Bytes) {
+	inline function writeBinary(b:Bytes) {
 		var length = b.length;
-		if (length < 0x20) {
-			// fix raw
-			o.writeByte(0xa0 | length);
-		} else 
+		if (length < 0x100) {
+			// binary 8
+			o.writeByte(0xc4);
+			o.writeUInt16(length);
+		} else
 		if (length < 0x10000) {
-			// raw 16
-			o.writeByte(0xda);
+			// binary 16
+			o.writeByte(0xc5);
 			o.writeUInt16(length);
 		} else {
-			// raw 32
-			o.writeByte(0xdb);
+			// binary 32
+			o.writeByte(0xc6);
 			o.writeInt32(length);
 		}
 		o.write(b);
+	}
+
+	inline function writeString(b:String) {
+		var length = b.length;
+		if (length < 0x20) {
+			// fix string
+			o.writeByte(0xa0 | length);
+		} else 
+		if (length < 0x100) {
+			// string 8
+			o.writeByte(0xd9);
+			o.writeByte(length);
+		} else
+		if (length < 0x10000) {
+			// string 16
+			o.writeByte(0xda);
+			o.writeUInt16(length);
+		} else {
+			// string 32
+			o.writeByte(0xdb);
+			o.writeInt32(length);
+		}
+		o.writeString(b);
 	}
 
 	inline function writeArray(d:Array<Dynamic>) {
@@ -157,7 +182,7 @@ class Encoder {
 	inline function writeHashMap(d:StringMap<Dynamic>) {
 		writeMapLength(Lambda.count(d));
 		for (k in d.keys()) { 
-			writeRaw(Bytes.ofString(k));
+			writeString(k);
 			encode(d.get(k));
 		}
 	}
@@ -166,7 +191,7 @@ class Encoder {
 		var f = d.fields();
 		writeMapLength(Lambda.count(f));
 		for (k in f) {
-			writeRaw(Bytes.ofString(k));
+			writeString(k);
 			encode(d.field(k));
 		}
 	}
