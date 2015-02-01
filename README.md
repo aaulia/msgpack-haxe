@@ -3,6 +3,10 @@ msgpack-haxe
 
 MessagePack (http://msgpack.org) serialization library for HaXe
 
+How to install:
+-------------
+Simply use `haxelib git` to use this github repo or `haxelib install msgpack-haxe` to use the one in the haxelib repository.
+
 Example code:
 -------------
 ``` haxe
