@@ -7,17 +7,23 @@ import haxe.io.Eof;
 
 using Reflect;
 
+enum DecodeMaps {
+	AsMsgPackMap;
+	AsObject;
+	AsStringMap;
+	AsIntMap;
+}
 
 class Decoder {
 	var o:Dynamic;
 
-	public function new(b:Bytes, obj:Bool) {
+	public function new(b:Bytes, maps:DecodeMaps) {
 		var i       = new BytesInput(b);
 		i.bigEndian = true;
-		o           = decode(i, obj);
+		o           = decode(i, maps);
 	}
 
-	function decode(i:BytesInput, obj):Dynamic {
+	function decode(i:BytesInput, maps):Dynamic {
 		try {
 			var b = i.readByte();
 			switch (b) {
@@ -55,17 +61,17 @@ class Decoder {
 				case 0xdb: return i.readString(i.readInt32());
 
 				// array 16, 32
-				case 0xdc: return readArray(i, i.readUInt16(), obj);
-				case 0xdd: return readArray(i, i.readInt32(), obj);
+				case 0xdc: return readArray(i, i.readUInt16(), maps);
+				case 0xdd: return readArray(i, i.readInt32(), maps);
 
 				// map 16, 32
-				case 0xde: return readMap(i, i.readUInt16(), obj);
-				case 0xdf: return readMap(i, i.readInt32(), obj);
+				case 0xde: return readMap(i, i.readUInt16(), maps);
+				case 0xdf: return readMap(i, i.readInt32(), maps);
 
 				default  : {
 					if (b < 0x80) {	return b;                            } else // positive fix num
-					if (b < 0x90) { return readMap(i, (0xf & b), obj);   } else // fix map
-					if (b < 0xa0) { return readArray(i, (0xf & b), obj); } else // fix array
+					if (b < 0x90) { return readMap(i, (0xf & b), maps);   } else // fix map
+					if (b < 0xa0) { return readArray(i, (0xf & b), maps); } else // fix array
 					if (b < 0xc0) { return i.readString(0x1f & b);       } else // fix string
 					if (b > 0xdf) { return 0xffffff00 | b;               }      // negative fix num
 				}
@@ -74,31 +80,27 @@ class Decoder {
 		return null;
 	}
 
-	function readArray(i, length, obj) {
+	function readArray(i, length, maps) {
 		var a = [];
 		for(x in 0...length) {
-			a.push(decode(i, obj));
+			a.push(decode(i, maps));
 		}
 		return a;
 	}
 
-	function readMap(i, length, obj) {
-		return if (!obj) {			
-			var h = new StringMap<Dynamic>();
-			for (x in 0...length) {
-				var k = decode(i, obj);
-				var v = decode(i, obj);
-				h.set(k, v);
-			}
-			h;		
-		} else {
-			var o = {};
-			for (x in 0...length) {
-				var k = decode(i, obj);
-				var v = decode(i, obj);
-				o.setField(k, v);
-			}
-			o;
+	function readMap(i, length, maps):Dynamic {
+		var m = new MsgPackMap();
+		for (x in 0...length) {
+			var k = decode(i, maps);
+			var v = decode(i, maps);
+			m.add(k, v);
+		}
+
+		return switch(maps){
+			case DecodeMaps.AsMsgPackMap: m;
+			case DecodeMaps.AsObject: m.toObject();
+			case DecodeMaps.AsStringMap: m.toStringMap();
+			case DecodeMaps.AsIntMap: m.toIntMap();
 		}
 	}
 
