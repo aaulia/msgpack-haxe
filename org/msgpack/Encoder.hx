@@ -1,5 +1,6 @@
 package org.msgpack;
 
+import haxe.ds.IntMap;
 import haxe.ds.StringMap;
 import haxe.io.Bytes;
 import haxe.io.BytesOutput;
@@ -32,14 +33,16 @@ class Encoder {
 			case TFloat   : writeFloat(d);
 			case TClass(c): {
 				switch (Type.getClassName(c)) {
-					case "Bytes"            : writeBinary(d);
-					case "String"           : writeString(d);
-					case "Array"            : writeArray(d);
-					case "haxe.ds.StringMap": writeHashMap(d);
+					case "Bytes"                  : writeBinary(d);
+					case "String"                 : writeString(d);
+					case "Array"                  : writeArray(d);
+					case "haxe.ds.IntMap"         : writeIntMap(d);
+					case "haxe.ds.StringMap"      : writeStringMap(d);
+					case "org.msgpack.MsgPackMap" : writeMsgPackMap(d);
 				}
 			}
 
-			case TObject  : writeObjectMap(d);
+			case TObject  : writeObjectAsMap(d);
 			case TEnum(e) : throw "Error: Enum not supported";
 			case TFunction: throw "Error: Function not supported";
 			case TUnknown : throw "Error: Unknown Data Type";
@@ -179,7 +182,7 @@ class Encoder {
 		}		
 	}
 
-	inline function writeHashMap(d:StringMap<Dynamic>) {
+	inline function writeStringMap(d:StringMap<Dynamic>) {
 		writeMapLength(Lambda.count(d));
 		for (k in d.keys()) { 
 			writeString(k);
@@ -187,12 +190,28 @@ class Encoder {
 		}
 	}
 
-	inline function writeObjectMap(d:Dynamic) {
+	inline function writeIntMap(d:IntMap<Dynamic>) {
+		writeMapLength(Lambda.count(d));
+		for (k in d.keys()) {
+			writeInt(k);
+			encode(d.get(k));
+		}
+	}
+
+	inline function writeObjectAsMap(d:Dynamic) {
 		var f = d.fields();
 		writeMapLength(Lambda.count(f));
 		for (k in f) {
 			writeString(k);
 			encode(d.field(k));
+		}
+	}
+
+	inline function writeMsgPackMap(m:MsgPackMap) {
+		writeMapLength(Lambda.count(m));
+		for (kv in m) {
+			encode(kv.key);
+			encode(kv.value);
 		}
 	}
 

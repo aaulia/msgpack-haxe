@@ -1,5 +1,7 @@
 package org.msgpack;
+
 import haxe.io.Bytes;
+import org.msgpack.Decoder.DecodeMaps;
 
 class MsgPack {
 
@@ -7,8 +9,9 @@ class MsgPack {
 		return new Encoder(d).getBytes(); 
 	}
 
-	public static inline function decode(b:Bytes, obj = true):Dynamic { 
-		return new Decoder(b, obj).getResult(); 
+	public static inline function decode(b:Bytes, ?maps:DecodeMaps):Dynamic {
+		if (maps == null) maps = DecodeMaps.AsObject;
+		return new Decoder(b, maps).getResult();
 	}
 
 }
