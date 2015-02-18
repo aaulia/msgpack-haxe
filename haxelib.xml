@@ -1,8 +1,0 @@
-<project name="msgpack-haxe" url="http://github.com/aaulia/msgpack-haxe" license="MIT">
-	<user name="aaulia"/>
-	<tag v="cross"/>
-	<tag v="serialization"/>
-	<tag v="msgpack"/>
-	<description>MessagePack (http://msgpack.org) for HaXe</description>
-    <version name="1.11">Add error checking on the server side rpc</version>
-</project>
