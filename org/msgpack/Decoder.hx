@@ -1,5 +1,6 @@
 package org.msgpack;
 
+import haxe.ds.IntMap;
 import haxe.ds.StringMap;
 import haxe.io.Bytes;
 import haxe.io.BytesInput;
@@ -7,23 +8,33 @@ import haxe.io.Eof;
 
 using Reflect;
 
-enum DecodeMaps {
-	AsMsgPackMap;
+enum DecodeOption {
+	AsMap;
 	AsObject;
-	AsStringMap;
-	AsIntMap;
+}
+
+private class Pair {
+
+	public var k (default, null) : Dynamic;
+	public var v (default, null) : Dynamic;
+
+	public function new(k, v)
+	{
+		this.k = k;
+		this.v = v;
+	}
 }
 
 class Decoder {
 	var o:Dynamic;
 
-	public function new(b:Bytes, maps:DecodeMaps) {
+	public function new(b:Bytes, option:DecodeOption) {
 		var i       = new BytesInput(b);
 		i.bigEndian = true;
-		o           = decode(i, maps);
+		o           = decode(i, option);
 	}
 
-	function decode(i:BytesInput, maps):Dynamic {
+	function decode(i:BytesInput, option:DecodeOption):Dynamic {
 		try {
 			var b = i.readByte();
 			switch (b) {
@@ -35,9 +46,9 @@ class Decoder {
 				case 0xc3: return true;
 
 				// binary
-				case 0xc4: return i.read(i.readByte());
+				case 0xc4: return i.read(i.readByte  ());
 				case 0xc5: return i.read(i.readUInt16());
-				case 0xc6: return i.read(i.readInt32());
+				case 0xc6: return i.read(i.readInt32 ());
 
 				// floating point
 				case 0xca: return i.readFloat ();
@@ -56,52 +67,87 @@ class Decoder {
 				case 0xd3: throw "Int64 not supported";
 
 				// string
-				case 0xd9: return i.readString(i.readByte());
+				case 0xd9: return i.readString(i.readByte  ());
 				case 0xda: return i.readString(i.readUInt16());
-				case 0xdb: return i.readString(i.readInt32());
+				case 0xdb: return i.readString(i.readInt32 ());
 
 				// array 16, 32
-				case 0xdc: return readArray(i, i.readUInt16(), maps);
-				case 0xdd: return readArray(i, i.readInt32(), maps);
+				case 0xdc: return readArray(i, i.readUInt16(), option);
+				case 0xdd: return readArray(i, i.readInt32 (), option);
 
 				// map 16, 32
-				case 0xde: return readMap(i, i.readUInt16(), maps);
-				case 0xdf: return readMap(i, i.readInt32(), maps);
+				case 0xde: return readMap(i, i.readUInt16(), option);
+				case 0xdf: return readMap(i, i.readInt32 (), option);
 
 				default  : {
-					if (b < 0x80) {	return b;                            } else // positive fix num
-					if (b < 0x90) { return readMap(i, (0xf & b), maps);   } else // fix map
-					if (b < 0xa0) { return readArray(i, (0xf & b), maps); } else // fix array
-					if (b < 0xc0) { return i.readString(0x1f & b);       } else // fix string
-					if (b > 0xdf) { return 0xffffff00 | b;               }      // negative fix num
+					if (b < 0x80) {	return b;                               } else // positive fix num
+					if (b < 0x90) { return readMap  (i, (0xf & b), option); } else // fix map
+					if (b < 0xa0) { return readArray(i, (0xf & b), option); } else // fix array
+					if (b < 0xc0) { return i.readString(0x1f & b);          } else // fix string
+					if (b > 0xdf) { return 0xffffff00 | b;                  }      // negative fix num
 				}
 			}
 		} catch (e:Eof) {}
 		return null;
 	}
 
-	function readArray(i, length, maps) {
+	function readArray(i:BytesInput, length:Int, option:DecodeOption) {
 		var a = [];
 		for(x in 0...length) {
-			a.push(decode(i, maps));
+			a.push(decode(i, option));
 		}
 		return a;
 	}
 
-	function readMap(i, length, maps):Dynamic {
-		var m = new MsgPackMap();
-		for (x in 0...length) {
-			var k = decode(i, maps);
-			var v = decode(i, maps);
-			m.add(k, v);
+	function readMap(i:BytesInput, length:Int, option:DecodeOption):Dynamic {
+		switch (option) {
+			case DecodeOption.AsObject:
+				var out = {};
+				for (n in 0...length) {
+					var k = decode(i, option);
+					var v = decode(i, option);
+					Reflect.setField(out, Std.string(k), v);
+				}
+
+				return out;
+
+			case DecodeOption.AsMap:
+				var pairs = [];
+				for (n in 0...length) {
+					var k = decode(i, option);
+					var v = decode(i, option);
+					pairs.push(new Pair(k, v));
+				}
+
+				if (pairs.length == 0)
+					return new StringMap<Dynamic>();
+
+				switch(Type.typeof(pairs[0].k))
+				{
+					case TInt:
+						var out = new IntMap<Dynamic>();
+						for (p in pairs) 
+							out.set(p.k, p.v);
+
+						return out;
+
+					case TClass(c):
+						switch(Type.getClassName(c))
+						{
+							case "String":
+								var out = new StringMap<Dynamic>();
+								for (p in pairs)
+									out.set(p.k, p.v);
+
+								return out;
+						}
+
+					default:
+						throw "Unsupported key Type";
+				}
 		}
 
-		return switch(maps){
-			case DecodeMaps.AsMsgPackMap: m;
-			case DecodeMaps.AsObject: m.toObject();
-			case DecodeMaps.AsStringMap: m.toStringMap();
-			case DecodeMaps.AsIntMap: m.toIntMap();
-		}
+		throw "Should not get here";
 	}
 
 	public inline function getResult() {

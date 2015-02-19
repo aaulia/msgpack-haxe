@@ -1,7 +1,5 @@
 package org.msgpack;
 
-import haxe.ds.IntMap;
-import haxe.ds.StringMap;
 import haxe.io.Bytes;
 import haxe.io.BytesOutput;
 
@@ -31,18 +29,17 @@ class Encoder {
 			case TBool    : o.writeByte(d ? 0xc3 : 0xc2);
 			case TInt     : writeInt(d);
 			case TFloat   : writeFloat(d);
-			case TClass(c): {
+			
+			case TClass(c): 
 				switch (Type.getClassName(c)) {
-					case "Bytes"                  : writeBinary(d);
-					case "String"                 : writeString(d);
-					case "Array"                  : writeArray(d);
-					case "haxe.ds.IntMap"         : writeIntMap(d);
-					case "haxe.ds.StringMap"      : writeStringMap(d);
-					case "org.msgpack.MsgPackMap" : writeMsgPackMap(d);
+					case "Bytes"  : writeBinary(d);
+					case "String" : writeString(d);
+					case "Array"  : writeArray (d);
+					case "haxe.ds.IntMap" | "haxe.ds.StringMap" | "haxe.ds.UnsafeStringMap" : 
+					     writeMap(d);
 				}
-			}
 
-			case TObject  : writeObjectAsMap(d);
+			case TObject  : writeObject(d);
 			case TEnum(e) : throw "Error: Enum not supported";
 			case TFunction: throw "Error: Function not supported";
 			case TUnknown : throw "Error: Unknown Data Type";
@@ -182,36 +179,26 @@ class Encoder {
 		}		
 	}
 
-	inline function writeStringMap(d:StringMap<Dynamic>) {
-		writeMapLength(Lambda.count(d));
+	inline function writeMap<K, V>(d:Map<K, V>) {
+		
+		var length = 0;
+		for (k in d.keys()) 
+			length++;
+
+		writeMapLength(length);
 		for (k in d.keys()) { 
-			writeString(k);
+			encode(k);
 			encode(d.get(k));
 		}
 	}
 
-	inline function writeIntMap(d:IntMap<Dynamic>) {
-		writeMapLength(Lambda.count(d));
-		for (k in d.keys()) {
-			writeInt(k);
-			encode(d.get(k));
-		}
-	}
-
-	inline function writeObjectAsMap(d:Dynamic) {
+	inline function writeObject(d:Dynamic) {
 		var f = d.fields();
+
 		writeMapLength(Lambda.count(f));
 		for (k in f) {
-			writeString(k);
+			encode(k);
 			encode(d.field(k));
-		}
-	}
-
-	inline function writeMsgPackMap(m:MsgPackMap) {
-		writeMapLength(Lambda.count(m));
-		for (kv in m) {
-			encode(kv.key);
-			encode(kv.value);
 		}
 	}
 
