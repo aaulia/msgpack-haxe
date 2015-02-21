@@ -9,6 +9,18 @@ How to install:
 -------------
 Simply use `haxelib git` to use this github repo or `haxelib install msgpack-haxe` to use the one in the haxelib repository.
 
+Supported Type:
+-------------
+* Null
+* Bool
+* Int
+* Float
+* Object
+* Bytes
+* String
+* Array
+* IntMap/StringMap
+
 Example code:
 -------------
 ``` haxe
