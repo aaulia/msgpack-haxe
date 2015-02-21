@@ -120,12 +120,12 @@ class Decoder {
 				}
 
 				if (pairs.length == 0)
-					return new StringMap<Dynamic>();
+					return new StringMap();
 
 				switch(Type.typeof(pairs[0].k))
 				{
 					case TInt:
-						var out = new IntMap<Dynamic>();
+						var out = new IntMap();
 						for (p in pairs) 
 							out.set(p.k, p.v);
 
@@ -135,7 +135,7 @@ class Decoder {
 						switch(Type.getClassName(c))
 						{
 							case "String":
-								var out = new StringMap<Dynamic>();
+								var out = new StringMap();
 								for (p in pairs)
 									out.set(p.k, p.v);
 

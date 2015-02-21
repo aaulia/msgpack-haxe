@@ -1,0 +1,6 @@
+version=2.1.0
+src=src
+bin=build
+report=report
+hxml=unit-test.hxml
+classPaths=../
