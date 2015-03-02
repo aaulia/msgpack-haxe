@@ -126,8 +126,14 @@ class Decoder {
 				{
 					case TInt:
 						var out = new IntMap();
-						for (p in pairs) 
+						for (p in pairs){
+							switch(Type.typeof(p.k)){
+								case TInt:
+								default:  throw "Unsupported mixed type keys";
+							}
+							if (out.exists(p.k)) throw "Unsupported multiple keys";
 							out.set(p.k, p.v);
+						}
 
 						return out;
 
@@ -136,8 +142,13 @@ class Decoder {
 						{
 							case "String":
 								var out = new StringMap();
-								for (p in pairs)
+								for (p in pairs){
+									switch(Type.typeof(p.k)){
+										case TClass(c) if (Type.getClassName(c) == "String"):
+										default:  throw "Unsupported mixed type keys";
+									}
 									out.set(p.k, p.v);
+								}
 
 								return out;
 						}
