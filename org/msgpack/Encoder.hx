@@ -32,7 +32,7 @@ class Encoder {
 			
 			case TClass(c): 
 				switch (Type.getClassName(c)) {
-					case "Bytes"  : writeBinary(d);
+					case "haxe.io.Bytes"  : writeBinary(d);
 					case "String" : writeString(d);
 					case "Array"  : writeArray (d);
 					case "haxe.ds.IntMap" | "haxe.ds.StringMap" | "haxe.ds.UnsafeStringMap" : 
