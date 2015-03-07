@@ -4,8 +4,8 @@
   "license": "MIT",
   "tags": ["cross","serialization","msgpack"],
   "description": "MessagePack (http://msgpack.org) for HaXe",
-  "version": "1.14.0",
-  "releasenote": "Adding Maps with arbitrary key types (thanks to mcheshkov)",
+  "version": "1.14.1",
+  "releasenote": "Fix Bytes class name, fix writing binary 8 length with 16 bit int, add more checks.",
   "contributors": ["aaulia", "Type1J", "mcheshkov"],
   "dependencies": { }
 }
