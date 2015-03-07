@@ -106,7 +106,7 @@ class Encoder {
 		if (length < 0x100) {
 			// binary 8
 			o.writeByte(0xc4);
-			o.writeUInt16(length);
+			o.writeByte(length);
 		} else
 		if (length < 0x10000) {
 			// binary 16

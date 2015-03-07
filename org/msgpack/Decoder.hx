@@ -129,32 +129,37 @@ class Decoder {
 						for (p in pairs){
 							switch(Type.typeof(p.k)){
 								case TInt:
-								default:  throw "Unsupported mixed type keys";
+								default:  
+									throw "Error: Mixed key type when decoding IntMap";
 							}
-							if (out.exists(p.k)) throw "Unsupported multiple keys";
+							
+							if (out.exists(p.k)) 
+								throw 'Error: Duplicate keys found => ${p.k}';
+
 							out.set(p.k, p.v);
 						}
 
 						return out;
 
-					case TClass(c):
-						switch(Type.getClassName(c))
-						{
-							case "String":
-								var out = new StringMap();
-								for (p in pairs){
-									switch(Type.typeof(p.k)){
-										case TClass(c) if (Type.getClassName(c) == "String"):
-										default:  throw "Unsupported mixed type keys";
-									}
-									out.set(p.k, p.v);
-								}
+					case TClass(c) if (Type.getClassName(c) == "String"):
+						var out = new StringMap();
+						for (p in pairs){
+							switch(Type.typeof(p.k)){
+								case TClass(c) if (Type.getClassName(c) == "String"):
+								default: 
+									throw "Error: Mixed key type when decoding StringMap";
+							}
 
-								return out;
+							if (out.exists(p.k)) 
+								throw 'Error: Duplicate keys found => ${p.k}';
+							
+							out.set(p.k, p.v);
 						}
 
+						return out;
+
 					default:
-						throw "Unsupported key Type";
+						throw "Error: Unsupported key Type";
 				}
 		}
 

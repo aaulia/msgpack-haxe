@@ -1,5 +1,6 @@
 package ;
 
+import haxe.io.Bytes;
 import massive.munit.util.Timer;
 import massive.munit.Assert;
 import massive.munit.async.AsyncFactory;
@@ -38,34 +39,30 @@ class BasicTest
 	@Test
 	public function testExample():Void
 	{
-		Assert.isTrue(doTest(null, "TNull" ));
-		Assert.isTrue(doTest(true, "TBool" ));
-		Assert.isTrue(doTest(1000, "TInt"  ));
-		Assert.isTrue(doTest(1.01, "TFloat"));
-		Assert.isTrue(doTest("ab", "String"));
+		Assert.isNull(doTest(null));
+		Assert.isType(doTest(true), Bool);
+		Assert.isType(doTest(1000), Int);
+		Assert.isType(doTest(1.01), Float);
+		Assert.isType(doTest("ab"), String);
+		Assert.isType(doTest(Bytes.ofString("ab")), Bytes);
+
+		Assert.areEqual(doTest(null), null);
+		Assert.isTrue(doTest(true));
+		Assert.areEqual(doTest(1000), 1000);
+		Assert.isTrue(Math.abs(1.01 - cast doTest(1.01)) <= 0.00000001);
+		Assert.areEqual(doTest("ab"), "ab");
+
+		var d = cast(doTest(Bytes.ofString("ab")), Bytes);
+		var a = Bytes.ofString("ab");
+		
+		Assert.isTrue((d.length == a.length) && (d.toString() == a.toString()));
 	}
 
-	function doTest<T>(a:T, n:String)
+	function doTest<T>(a:T)
 	{
 		var e = MsgPack.encode(a);
 		var d = MsgPack.decode(e);
 
-		switch (Type.typeof(a))
-		{
-			case TNull    : return n == "TNull";
-			case TBool    : return n == "TBool";
-			case TInt     : return n == "TInt";
-			case TFloat   : return n == "TFloat";
-			case TClass(c):
-				switch (Type.getClassName(c))
-				{
-					case "String":
-						return n == "String";
-				}
-
-			default:
-		}
-		
-		return false;
+		return d;
 	}
 }
