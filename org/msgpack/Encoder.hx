@@ -1,5 +1,6 @@
 package org.msgpack;
 
+import haxe.Int64;
 import haxe.io.Bytes;
 import haxe.io.BytesOutput;
 
@@ -32,6 +33,7 @@ class Encoder {
 			
 			case TClass(c): 
 				switch (Type.getClassName(c)) {
+					case "haxe.Int64"  : writeInt64(d);
 					case "haxe.io.Bytes"  : writeBinary(d);
 					case "String" : writeString(d);
 					case "Array"  : writeArray (d);
@@ -45,6 +47,12 @@ class Encoder {
 			case TFunction: throw "Error: Function not supported";
 			case TUnknown : throw "Error: Unknown Data Type";
 		}
+	}
+
+	inline function writeInt64(d:Int64) {
+		o.writeByte(0xd3);
+		o.writeInt32(Int64.getHigh(d));
+		o.writeInt32(Int64.getLow(d));
 	}
 
 	inline function writeInt(d:Int) {
