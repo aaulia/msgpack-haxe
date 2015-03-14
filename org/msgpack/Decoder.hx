@@ -1,5 +1,6 @@
 package org.msgpack;
 
+import haxe.Int64;
 import haxe.ds.IntMap;
 import haxe.ds.StringMap;
 import haxe.io.Bytes;
@@ -64,7 +65,7 @@ class Decoder {
 				case 0xd0: return i.readInt8 ();
 				case 0xd1: return i.readInt16();
 				case 0xd2: return i.readInt32();
-				case 0xd3: throw "Int64 not supported";
+				case 0xd3: return readInt64(i);
 
 				// string
 				case 0xd9: return i.readString(i.readByte  ());
@@ -89,6 +90,12 @@ class Decoder {
 			}
 		} catch (e:Eof) {}
 		return null;
+	}
+
+	function readInt64(i:BytesInput){
+		var high = i.readInt32();
+		var low = i.readInt32();
+		return Int64.make(high, low);
 	}
 
 	function readArray(i:BytesInput, length:Int, option:DecodeOption) {

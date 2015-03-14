@@ -21,5 +21,6 @@ class TestSuite extends massive.munit.TestSuite
 		add(BasicTest);
 		add(ArrayTest);
 		add(ObjectTest);
+		add(Int64Test);
 	}
 }
