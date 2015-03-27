@@ -4,8 +4,8 @@
   "license": "MIT",
   "tags": ["cross","serialization","msgpack"],
   "description": "MessagePack (http://msgpack.org) for HaXe",
-  "version": "1.14.1",
-  "releasenote": "Fix Bytes class name, fix writing binary 8 length with 16 bit int, add more checks.",
+  "version": "1.15.0",
+  "releasenote": "Add Int64 support",
   "contributors": ["aaulia", "Type1J", "mcheshkov"],
   "dependencies": { }
 }
