@@ -33,8 +33,8 @@ class Encoder {
 			
 			case TClass(c): 
 				switch (Type.getClassName(c)) {
-					case "haxe.Int64"  : writeInt64(d);
-					case "haxe.io.Bytes"  : writeBinary(d);
+					case "haxe._Int64.___Int64" : writeInt64(d);
+					case "haxe.io.Bytes" : writeBinary(d);
 					case "String" : writeString(d);
 					case "Array"  : writeArray (d);
 					case "haxe.ds.IntMap" | "haxe.ds.StringMap" | "haxe.ds.UnsafeStringMap" : 
@@ -51,8 +51,8 @@ class Encoder {
 
 	inline function writeInt64(d:Int64) {
 		o.writeByte(0xd3);
-		o.writeInt32(Int64.getHigh(d));
-		o.writeInt32(Int64.getLow(d));
+		o.writeInt32(d.high);
+		o.writeInt32(d.low);
 	}
 
 	inline function writeInt(d:Int) {
