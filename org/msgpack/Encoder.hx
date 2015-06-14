@@ -25,27 +25,32 @@ class Encoder {
 	}
 
 	function encode(d:Dynamic) {
-		switch (Type.typeof(d)) {
-			case TNull    : o.writeByte(0xc0);
-			case TBool    : o.writeByte(d ? 0xc3 : 0xc2);
-			case TInt     : writeInt(d);
-			case TFloat   : writeFloat(d);
-			
-			case TClass(c): 
-				switch (Type.getClassName(c)) {
-					case "haxe._Int64.___Int64" : writeInt64(d);
-					case "haxe.io.Bytes" : writeBinary(d);
-					case "String" : writeString(d);
-					case "Array"  : writeArray (d);
-					case "haxe.ds.IntMap" | "haxe.ds.StringMap" | "haxe.ds.UnsafeStringMap" : 
-					     writeMap(d);
-					default: throw 'Error: ${Type.getClassName(c)} not supported';
-				}
+		if (Std.is(d, String))
+			writeString(d);
+		else if (Std.is(d, Array))
+			writeArray(d);
+		else {
+			switch (Type.typeof(d)) {
+				case TNull    : o.writeByte(0xc0);
+				case TBool    : o.writeByte(d ? 0xc3 : 0xc2);
+				case TInt     : writeInt(d);
+				case TFloat   : writeFloat(d);
 
-			case TObject  : writeObject(d);
-			case TEnum(e) : throw "Error: Enum not supported";
-			case TFunction: throw "Error: Function not supported";
-			case TUnknown : throw "Error: Unknown Data Type";
+				case TClass(c):
+					switch (Type.getClassName(c)) {
+						case "haxe._Int64.___Int64" : writeInt64(d);
+						case "haxe.io.Bytes" : writeBinary(d);
+						case "Array"  : writeArray (d);
+						case "haxe.ds.IntMap" | "haxe.ds.StringMap" | "haxe.ds.UnsafeStringMap" :
+						     writeMap(d);
+						default: throw 'Error: ${Type.getClassName(c)} not supported';
+					}
+
+				case TObject  : writeObject(d);
+				case TEnum(e) : throw "Error: Enum not supported";
+				case TFunction: throw "Error: Function not supported";
+				case TUnknown : throw "Error: Unknown Data Type";
+			}
 		}
 	}
 
