@@ -4,8 +4,8 @@
   "license": "MIT",
   "tags": ["cross","serialization","msgpack"],
   "description": "MessagePack (http://msgpack.org) for HaXe",
-  "version": "1.15.0",
-  "releasenote": "Add Int64 support",
+  "version": "1.15.1",
+  "releasenote": "Update deprecated Int64 getHigh() and getLow()",
   "contributors": ["aaulia", "Type1J", "mcheshkov"],
   "dependencies": { }
 }
