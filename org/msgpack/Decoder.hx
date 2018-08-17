@@ -59,7 +59,7 @@ class Decoder {
 				case 0xcc: return i.readByte  ();
 				case 0xcd: return i.readUInt16();
 				case 0xce: return i.readInt32 ();
-				case 0xcf: throw "UInt64 not supported";
+				case 0xcf: return readUInt64(i);
 
 				// signed int
 				case 0xd0: return i.readInt8 ();
@@ -90,6 +90,12 @@ class Decoder {
 			}
 		} catch (e:Eof) {}
 		return null;
+	}
+	
+	function readUInt64(i:BytesInput) {
+		var high = i.readInt32() * Math.pow(2, 32);
+		var low = i.readInt32();
+		return high + low;
 	}
 
 	function readInt64(i:BytesInput){
